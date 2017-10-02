@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.white.dao.NoteBookDao">
+    <!-- 选择普通笔记本 -->
+    <select id="findNormalNoteBook" parameterType="integer" resultType="cn.white.entity.NoteBook">
+          select * from cn_notebook 
+          where cn_user_id=#{cn_user_id}
+          and cn_notebook_type_id in(
+                 select cn_notebook_type_id from cn_notebook_type
+                 where cn_notebook_type_code
+                 in ('normal')
+          ) 
+          order by cn_notebook_createtime desc
+      </select>
+    <!--选择特殊笔记本-->
+    <select id="findSpecialNoteBook" parameterType="integer" resultType="cn.white.entity.NoteBook">
+           select b.*,t.cn_notebook_type_code from cn_notebook b
+		inner join cn_notebook_type t
+		on b.cn_notebook_type_id=t.cn_notebook_type_id
+		where b.cn_user_id=#{cn_user_id}
+		and t.cn_notebook_type_code
+		in ('favorites','recycle','push')
+   </select>
+    <!-- 新建新的笔记本 -->
+    <insert id="saveNoteBook" parameterType="cn.white.entity.NoteBook">
+           insert into 
+           cn_notebook(cn_user_id,cn_notebook_name,cn_notebook_desc,cn_notebook_createtime,cn_notebook_type_id)
+           values(#{cn_user_id},#{cn_notebook_name},#{cn_notebook_desc},#{cn_notebook_createtime},#{cn_notebook_type_id})
+    </insert>
+    <!-- 修改笔记本 -->
+    <update id="updateNoteBook" parameterType="cn.white.entity.NoteBook" >
+            UPDATE cn_notebook SET cn_notebook_name=#{cn_notebook_name},
+            cn_notebook_desc =#{cn_notebook_desc},
+            cn_notebook_type_id=#{cn_notebook_type_id},
+            cn_notebook_createtime=#{cn_notebook_createtime}
+            WHERE cn_user_id=#{cn_user_id} and cn_notebook_id=#{cn_notebook_id}
+      </update>
+    <!--根据id删除笔记本-->
+    <delete id="deleteNoteBookById" parameterType="integer">
+        DELETE  FROM cn_notebook where cn_notebook_id = #{cn_notebook_id}
+    </delete>
+</mapper>
+
+
+
+
+
+
+
+
+
